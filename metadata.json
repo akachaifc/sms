@@ -1,0 +1,7 @@
+{
+  "name": "SMS Master Console",
+  "description": "High-performance Super Admin Master Console for the Ugandan School OS. Multi-tenant institutional management with dynamic asset publishing and registry audit.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
