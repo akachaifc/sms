@@ -1,21 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   LifeBuoy, Search, Inbox, Send, CheckCircle2, Clock, AlertCircle, 
-  Loader2, MoreVertical, Paperclip, Trash2, Filter, User, 
-  Building2, ChevronRight, BookOpen, Reply, ShieldCheck, Mail, Users,
-  Key, RefreshCw, ShieldAlert, Check
+  Loader2, MoreVertical, User, 
+  Building2, ShieldCheck,
+  Key, ShieldAlert, Check
 } from 'lucide-react';
 import { supabase } from '../supabase';
-import { SupportThread, SupportMessage, FAQArticle, School, ResetRequest } from '../types';
+import { SupportThread, SupportMessage, SupportMessage as _SupportMessage, ResetRequest } from '../types';
 
 const SupportHub: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'threads' | 'security'>('threads');
   const [threads, setThreads] = useState<SupportThread[]>([]);
   const [activeThread, setActiveThread] = useState<SupportThread | null>(null);
   const [messages, setMessages] = useState<SupportMessage[]>([]);
-  const [faqs, setFaqs] = useState<FAQArticle[]>([]);
   const [resetRequests, setResetRequests] = useState<ResetRequest[]>([]);
-  const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [newReply, setNewReply] = useState('');
   
@@ -23,7 +21,6 @@ const SupportHub: React.FC = () => {
 
   useEffect(() => {
     fetchThreads();
-    fetchFAQS();
     fetchResetRequests();
   }, []);
 
@@ -32,11 +29,12 @@ const SupportHub: React.FC = () => {
   }, [activeThread]);
 
   const fetchThreads = async () => {
-    setLoading(true);
     try {
       const { data } = await supabase.from('support_threads').select('*, schools(name)').order('last_message_at', { ascending: false });
       if (data) setThreads(data.map(t => ({ ...t, school_name: t.schools?.name })));
-    } finally { setLoading(false); }
+    } catch (err) {
+      console.error("Error fetching threads");
+    }
   };
 
   const fetchResetRequests = async () => {
@@ -50,26 +48,18 @@ const SupportHub: React.FC = () => {
 
     setSending(true);
     try {
-      // 1. Generate 8-character random password per instruction
       const charset = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
       let newPass = "";
       for(let i=0; i<8; i++) newPass += charset.charAt(Math.floor(Math.random() * charset.length));
       
-      // 2. Overwrite user password in Supabase Auth via RPC or Admin method
-      // Note: In a real production app, this would call a secure edge function.
-      // Assuming a logic flow for standard Auth update here.
       const { error: authErr } = await supabase.auth.admin.updateUserById(req.user_id, {
         password: newPass
       });
       if (authErr) throw authErr;
 
-      // 3. Mark for mandatory reset in DB Registry
       await supabase.from(req.table_source).update({ needs_password_reset: true }).eq('id', req.user_id);
-      
-      // 4. Close request
       await supabase.from('reset_requests').update({ status: 'Approved' }).eq('id', req.id);
 
-      // 5. Dispatch EmailJS (template_ysfduyo)
       const params = {
         admin_name: req.full_name,
         assigned_role: req.role,
@@ -101,11 +91,6 @@ const SupportHub: React.FC = () => {
     if (data) setMessages(data);
   };
 
-  const fetchFAQS = async () => {
-    const { data } = await supabase.from('faq_articles').select('*').order('title');
-    if (data) setFaqs(data);
-  };
-
   const handleSendReply = async (content: string) => {
     if (!activeThread || !content.trim()) return;
     setSending(true);
@@ -125,7 +110,6 @@ const SupportHub: React.FC = () => {
 
   return (
     <div className="h-[calc(100vh-10rem)] overflow-hidden flex flex-col bg-white rounded-[2.5rem] shadow-xl border border-slate-100">
-      {/* Header Tabs */}
       <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-8">
           <div className="flex items-center gap-4">
@@ -148,7 +132,6 @@ const SupportHub: React.FC = () => {
       <div className="flex-1 flex overflow-hidden">
         {activeTab === 'threads' ? (
           <>
-            {/* Thread List */}
             <div className="w-96 border-r border-slate-100 bg-white flex flex-col shrink-0">
               <div className="p-4 border-b border-slate-50">
                   <div className="relative">
@@ -171,7 +154,6 @@ const SupportHub: React.FC = () => {
               </div>
             </div>
 
-            {/* Chat Pane */}
             <div className="flex-1 flex flex-col bg-slate-50/30">
               {activeThread ? (
                 <>
@@ -204,7 +186,6 @@ const SupportHub: React.FC = () => {
             </div>
           </>
         ) : (
-          /* Security Access Pane */
           <div className="flex-1 p-10 bg-slate-50/50 overflow-y-auto custom-scrollbar">
              <div className="max-w-5xl mx-auto space-y-6">
                 <div className="flex justify-between items-end mb-10">

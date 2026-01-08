@@ -1,7 +1,6 @@
-
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { ShieldCheck, UserPlus, Search, MoreVertical, ShieldAlert, Loader2, AlertCircle, X, CheckCircle2, UserCircle, Key, Download } from 'lucide-react';
+import { ShieldCheck, UserPlus, Search, MoreVertical, ShieldAlert, Loader2, AlertCircle, X, CheckCircle2, UserCircle, Key } from 'lucide-react';
 import { supabase, supabaseUrl, supabaseAnonKey } from '../supabase';
 import { SystemOperator } from '../types';
 
