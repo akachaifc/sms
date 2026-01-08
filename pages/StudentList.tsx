@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -6,7 +5,7 @@ import {
   Fingerprint, MapPin, BookOpen, Activity, 
   ShieldCheck, ShieldAlert, Award, Calendar, Home, User as UserIcon,
   Phone, Heart, Briefcase, Banknote, Map, Scale, FileSpreadsheet, Save,
-  ChevronRight, Filter, ChevronDown, IdCard, FileText, Star,
+  ChevronRight, Filter, ChevronDown, Contact, FileText, Star,
   CheckCircle2
 } from 'lucide-react';
 import { supabase } from '../supabase';
@@ -101,7 +100,7 @@ const StudentList: React.FC<StudentListProps> = ({ schoolId }) => {
              >
                 <div className="flex items-center gap-4">
                    <div className="p-2 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-100">
-                      <IdCard className="w-4 h-4" />
+                      <Contact className="w-4 h-4" />
                    </div>
                    <div>
                       <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">{groupKey} REGISTRY</h3>

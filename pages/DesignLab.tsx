@@ -310,7 +310,7 @@ const DesignLab: React.FC<{ schoolId: string }> = ({ schoolId }) => {
       }
 
       const pdfBytes = await pdfDoc.save();
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
       setTestResultUrl(URL.createObjectURL(blob));
     } catch (err) {
       console.error(err);

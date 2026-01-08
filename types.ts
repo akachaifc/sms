@@ -351,6 +351,25 @@ export interface OverlayVariable {
   ny?: number;
 }
 
+// Added CanvasElement interface to resolve error in IDDesigner.tsx
+export interface CanvasElement {
+  id: string;
+  type: 'text' | 'placeholder' | 'photo' | 'barcode' | 'qr' | 'signature' | 'officer_signature';
+  content: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  fontSize: number;
+  fontWeight: string;
+  fontStyle: string;
+  color: string;
+  barcodeConfig?: {
+    fields: string[];
+    format: 'PSV' | 'JSON';
+  };
+}
+
 // Added IDTemplate interface to resolve error in DesignLab.tsx
 export interface IDTemplate {
   id: string;

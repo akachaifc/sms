@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   CreditCard, Type, Image as ImageIcon, Save, Plus, Trash2, Loader2,
@@ -11,27 +10,12 @@ import {
 } from 'lucide-react';
 import { supabase } from '../supabase';
 // Fix: MASTER_REGISTRY_FIELDS is the correct export name from types.ts. Added alias to match local usage.
-import { School, MASTER_REGISTRY_FIELDS as STUDENT_FIELD_REGISTRY } from '../types';
+import { School, MASTER_REGISTRY_FIELDS as STUDENT_FIELD_REGISTRY, CanvasElement } from '../types';
 import * as Tesseract from 'tesseract.js';
 
 interface BarcodeConfig {
   fields: string[];
   format: 'PSV' | 'JSON';
-}
-
-interface CanvasElement {
-  id: string;
-  type: 'placeholder' | 'text' | 'photo' | 'barcode' | 'qr' | 'signature' | 'officer_signature';
-  content: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  fontSize: number;
-  fontWeight: 'normal' | 'bold';
-  fontStyle: 'normal' | 'italic';
-  color: string;
-  barcodeConfig?: BarcodeConfig;
 }
 
 interface SideState {
@@ -92,7 +76,7 @@ const IDDesigner: React.FC = () => {
         const bbox = w.bbox;
         return {
           id: `ocr-${Date.now()}-${i}`,
-          type: 'text',
+          type: 'text' as const,
           content: w.text,
           x: bbox.x0,
           y: bbox.y0,
@@ -261,7 +245,7 @@ const IDDesigner: React.FC = () => {
            <button onClick={() => { setActiveSide(side); setSelectedElementId(null); }} className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase transition-all ${activeSide === side ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-slate-400'}`}>Target Side</button>
         </div>
         <div 
-          ref={ref}
+          ref={ref as React.RefObject<HTMLDivElement>}
           className={`bg-white shadow-2xl relative overflow-hidden border border-slate-200 transition-all cursor-crosshair ${orientation === 'landscape' ? 'id-card-landscape' : 'id-card-portrait'} ${activeSide === side ? 'ring-4 ring-indigo-500/20' : 'opacity-80 grayscale-[0.4]'}`}
           style={{ 
             backgroundImage: state.backgroundUrl ? `url(${state.backgroundUrl})` : 'none', 
@@ -489,10 +473,10 @@ const IDDesigner: React.FC = () => {
                    )}
 
                    <div className="grid grid-cols-2 gap-4 border-t border-slate-100 pt-8">
-                      <div className="space-y-1"><label className="text-[9px] font-black text-slate-400 uppercase">X</label><input type="number" value={Math.round(selectedEl.x)} onChange={e => updateElement(selectedEl.id, { x: parseInt(e.target.value) })} className="w-full bg-slate-50 border-none rounded-xl p-3.5 text-[11px] font-black" /></div>
-                      <div className="space-y-1"><label className="text-[9px] font-black text-slate-400 uppercase">Y</label><input type="number" value={Math.round(selectedEl.y)} onChange={e => updateElement(selectedEl.id, { y: parseInt(e.target.value) })} className="w-full bg-slate-50 border-none rounded-xl p-3.5 text-[11px] font-black" /></div>
-                      <div className="space-y-1"><label className="text-[9px] font-black text-slate-400 uppercase">Width</label><input type="number" value={Math.round(selectedEl.width)} onChange={e => updateElement(selectedEl.id, { width: parseInt(e.target.value) })} className="w-full bg-slate-50 border-none rounded-xl p-3.5 text-[11px] font-black" /></div>
-                      <div className="space-y-1"><label className="text-[9px] font-black text-slate-400 uppercase">Height</label><input type="number" value={Math.round(selectedEl.height)} onChange={e => updateElement(selectedEl.id, { height: parseInt(e.target.value) })} className="w-full bg-slate-50 border-none rounded-xl p-3.5 text-[11px] font-black" /></div>
+                      <div className="space-y-1"><label className="text-[9px] font-black text-slate-400 uppercase">X</label><input type="number" value={Math.round(selectedEl.x)} onChange={e => updateElement(selectedEl.id, { x: parseInt(e.target.value) || 0 })} className="w-full bg-slate-50 border-none rounded-xl p-3.5 text-[11px] font-black" /></div>
+                      <div className="space-y-1"><label className="text-[9px] font-black text-slate-400 uppercase">Y</label><input type="number" value={Math.round(selectedEl.y)} onChange={e => updateElement(selectedEl.id, { y: parseInt(e.target.value) || 0 })} className="w-full bg-slate-50 border-none rounded-xl p-3.5 text-[11px] font-black" /></div>
+                      <div className="space-y-1"><label className="text-[9px] font-black text-slate-400 uppercase">Width</label><input type="number" value={Math.round(selectedEl.width)} onChange={e => updateElement(selectedEl.id, { width: parseInt(e.target.value) || 0 })} className="w-full bg-slate-50 border-none rounded-xl p-3.5 text-[11px] font-black" /></div>
+                      <div className="space-y-1"><label className="text-[9px] font-black text-slate-400 uppercase">Height</label><input type="number" value={Math.round(selectedEl.height)} onChange={e => updateElement(selectedEl.id, { height: parseInt(e.target.value) || 0 })} className="w-full bg-slate-50 border-none rounded-xl p-3.5 text-[11px] font-black" /></div>
                    </div>
                 </div>
               ) : (
